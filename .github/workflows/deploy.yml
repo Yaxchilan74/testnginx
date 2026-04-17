@@ -25,23 +25,23 @@ jobs:
         
       - name: Configurar Docker para Artifact Registry
         run: |
-          gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+          gcloud auth configure-docker northamerica-south1-docker.pkg.dev --quiet
 
       - name: Build y Push imagen
         env:
-          IMAGE: us-central1-docker.pkg.dev/annular-lodge-304703/reponginx/app:latest
+          IMAGE: northamerica-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/reponginx/app:latest
         run: |
           docker buildx build -t "$IMAGE" .
           docker push "$IMAGE"
 
       - name: Deploy a Cloud Run
         env:
-          IMAGE: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/reponginx/app:latest
+          IMAGE: northamerica-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/reponginx/app:latest
         run: |
           gcloud run deploy reponginx \
             --image "$IMAGE" \
             --platform managed \
-            --region us-central1 \
+            --region northamerica-south1 \
             --allow-unauthenticated \
             --port 8080
             
