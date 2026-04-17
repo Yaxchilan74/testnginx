@@ -29,13 +29,14 @@ jobs:
 
       - name: Build y Push imagen
         env:
-          IMAGE: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/mi-sitio-web/app:latest
+          IMAGE: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/reponginx/app:latest
         run: |
           docker build -t $IMAGE .
           docker push $IMAGE
-       - name: Deploy a Cloud Run
+
+      - name: Deploy a Cloud Run
         env:
-          IMAGE: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/mi-sitio-web/app:latest
+          IMAGE: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/reponginx/app:latest
         run: |
           gcloud run deploy mi-sitio-web \
             --image $IMAGE \
