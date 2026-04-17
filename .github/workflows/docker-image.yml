@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Deploy to GCP
 
 on:
   push:
@@ -8,11 +8,41 @@ on:
 
 jobs:
 
-  build:
-
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      - name: Checkout código
+        uses: actions/checkout@v4
+        
+      - name: Autenticar con GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+          
+      - name: Configurar gcloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        
+      - name: Configurar Docker para Artifact Registry
+        run: |
+          gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+
+      - name: Build y Push imagen
+        env:
+          IMAGE: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/mi-sitio-web/app:latest
+        run: |
+          docker build -t $IMAGE .
+          docker push $IMAGE
+       - name: Deploy a Cloud Run
+        env:
+          IMAGE: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/mi-sitio-web/app:latest
+        run: |
+          gcloud run deploy mi-sitio-web \
+            --image $IMAGE \
+            --platform managed \
+            --region us-central1 \
+            --allow-unauthenticated \
+            --port 8080
+      
+
+      
