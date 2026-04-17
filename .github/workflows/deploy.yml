@@ -31,8 +31,8 @@ jobs:
         env:
           IMAGE: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/reponginx/app:latest
         run: |
-          docker buildx build -t $IMAGE -f testnginx/Dockerfile .
-          docker push $IMAGE
+          docker buildx build -t "$IMAGE" -f testnginx/Dockerfile .
+          docker push "$IMAGE"
 
       - name: Deploy a Cloud Run
         env:
