@@ -31,14 +31,14 @@ jobs:
         env:
           IMAGE: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/reponginx/app:latest
         run: |
-          docker buildx build -t $IMAGE -f ./Dockerfile .
+          docker buildx build -t $IMAGE -f ${{ github.workspace }}/Dockerfile .
           docker push $IMAGE
 
       - name: Deploy a Cloud Run
         env:
           IMAGE: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/reponginx/app:latest
         run: |
-          gcloud run deploy mi-sitio-web \
+          gcloud run deploy reponginx \
             --image $IMAGE \
             --platform managed \
             --region us-central1 \
